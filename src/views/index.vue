@@ -2,7 +2,7 @@
   <el-main>
     <el-row :gutter="15">
       <el-col :xl="6" :lg="6" :md="8" :sm="12" :xs="24" v-for="item in data" :key="item.id">
-        <el-card class="resource-item" shadow="hover">
+        <el-card class="resource resource-item" shadow="hover">
           <h1 style="font-size: 35px">{{ item.dbName }}</h1>
           <ul>
             <li>
@@ -49,9 +49,10 @@
 import {onMounted, reactive, ref, nextTick, defineAsyncComponent} from "vue";
 import {Generator} from "@/models/generator";
 import {ElMessage} from "element-plus";
-import {Db,Exec} from '@/api/generator'
+import {Db, Exec} from '@/api/generator'
+import router from "@/router";
 
-let data:Array<Generator.SysGeneratorDb> = reactive([])
+let data: Array<Generator.SysGeneratorDb> = reactive([])
 let saveDialog = defineAsyncComponent(() => import('./datasource/save.vue'));
 let saveD = ref<InstanceType<typeof saveDialog> | null>(null);
 // 初始化
@@ -64,7 +65,7 @@ const getDbs = () => {
   nextTick(() => {
     Db.page.get().then(res => {
       if (res.code === 200) {
-        data.splice(0,data.length)
+        data.splice(0, data.length)
         Object.assign(data, res.data.records)
       } else {
         ElMessage.error(res.message)
@@ -86,12 +87,14 @@ const edit = (db?: Generator.SysGeneratorDb) => {
 function doGenerator(db: Generator.SysGeneratorDb) {
   Exec.generatorZip({id: db.id as number, tables: undefined}, {
     headers: {Loading: '.resource-item'}
+  }).catch(() => {
+    ElMessage.error("生成失败！！！")
   })
 }
 
 // 配置参数
 function config(db: Generator.SysGeneratorDb) {
-  console.log(db)
+  router.push({path: "/generator/config", query: {id: db.id, dbName: db.dbName}})
 }
 
 // 删除数据源
@@ -100,14 +103,14 @@ function del(db: Generator.SysGeneratorDb) {
     if (res.code === 200) {
       ElMessage.success(res.message)
       getDbs()
-    }else
+    } else
       ElMessage.error(res.message)
   })
 }
 </script>
 <style scoped>
 .resource {
-  height: 305px;
+  height: 223px;
 }
 
 .resource-item h2 {

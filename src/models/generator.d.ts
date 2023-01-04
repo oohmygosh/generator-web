@@ -35,9 +35,9 @@ declare namespace Generator {
      */
     interface SysGeneratorTable extends BaseEntity {
         //数据源Id
-        dbId: number
+        dbId?: number
         //表名
-        name: string
+        name?: string
         // 表注释
         comment?: string
         // 表策略
