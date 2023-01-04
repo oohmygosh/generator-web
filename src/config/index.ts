@@ -11,7 +11,6 @@ const DEFAULT_CONFIG = {
     TIMEOUT: 10000,
     // 接口地址
     API_URL: process.env.VUE_APP_API_BASEURL,
-
 }
 
 export default DEFAULT_CONFIG

@@ -202,7 +202,7 @@ const showLoading = (target: any) => {
 const hideLoading = () => {
     if (loadingRequestCount <= 0) return;
     loadingRequestCount--;
-    if (loadingRequestCount === 0) {
+    if (loadingRequestCount <= 0) {
         toHideLoading();
     }
 }

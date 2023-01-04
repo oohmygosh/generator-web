@@ -42,7 +42,7 @@
       </el-col>
     </el-row>
   </el-main>
-  <saveDialog ref="saveD" :db="data"></saveDialog>
+  <saveDialog ref="saveD" :db="data" @success="getDbs()"></saveDialog>
 </template>
 
 <script setup lang="ts">
@@ -51,19 +51,27 @@ import {Generator} from "@/models/generator";
 import {ElMessage} from "element-plus";
 import {Db,Exec} from '@/api/generator'
 
-let data = reactive<Array<Generator.SysGeneratorDb>>([]);
+let data:Array<Generator.SysGeneratorDb> = reactive([])
 let saveDialog = defineAsyncComponent(() => import('./datasource/save.vue'));
 let saveD = ref<InstanceType<typeof saveDialog> | null>(null);
 // 初始化
 onMounted(() => {
-  Db.page.get().then(res => {
-    if (res.code === 200) {
-      Object.assign(data, res.data.records)
-    } else {
-      ElMessage.error(res.message)
-    }
-  })
+  getDbs()
 })
+
+// 获取数据源
+const getDbs = () => {
+  nextTick(() => {
+    Db.page.get().then(res => {
+      if (res.code === 200) {
+        data.splice(0,data.length)
+        Object.assign(data, res.data.records)
+      } else {
+        ElMessage.error(res.message)
+      }
+    })
+  })
+}
 
 // 添加数据源
 const edit = (db?: Generator.SysGeneratorDb) => {
@@ -88,7 +96,13 @@ function config(db: Generator.SysGeneratorDb) {
 
 // 删除数据源
 function del(db: Generator.SysGeneratorDb) {
-  console.log(db)
+  Db.delete([db.id as number]).then(res => {
+    if (res.code === 200) {
+      ElMessage.success(res.message)
+      getDbs()
+    }else
+      ElMessage.error(res.message)
+  })
 }
 </script>
 <style scoped>

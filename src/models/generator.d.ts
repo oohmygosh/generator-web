@@ -16,7 +16,7 @@ declare namespace Generator {
         //密码
         password: string
         //数据库类型
-        dbType: string
+        dbType?: string
         //数据库描述
         comment: string
         //0：未删除 1：删除

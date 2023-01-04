@@ -48,7 +48,7 @@ export const Db = {
         }
     },
     save: (params: Generator.SysGeneratorDb, config?: AxiosRequestConfig) => http.post(dbBase + (params.id ? '/update' : '/create'), params,config),
-    delete: (ids: []) => http.post(dbBase + '/delete', ids),
+    delete: (ids: number[]) => http.post(dbBase + '/delete', ids),
 }
 
 /**
