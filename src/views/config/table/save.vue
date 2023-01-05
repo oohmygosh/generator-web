@@ -20,11 +20,12 @@ import {ref, defineExpose, defineProps, defineEmits, reactive, toRefs} from "vue
 import {Generator} from "@/models/generator";
 import {ElForm, ElMessage, FormInstance, FormRules} from "element-plus";
 import {Table} from "@/api/generator";
+import {Optional} from "@/utils/optional";
 
 let props = defineProps<{
   dbId: number
 }>();
-let {dbId} = toRefs(props);
+toRefs(props);
 let emits = defineEmits(['success'])
 const titleMap = {
   add: '新增表',
@@ -53,7 +54,7 @@ const submit = (formInstance: FormInstance | undefined,) => {
   if (!formInstance) return
   formInstance.validate(valid => {
     if (valid) {
-      form.dbId = form.dbId ? form.dbId : dbId.value
+      Optional.ofNullable(form.dbId).ifPresentOrElse(id => form.dbId = id,() => {throw "参数缺失！！"})
       Table.save(form, {headers: {Loading: '.submitBtn'}}).then(res => {
         if (res.code === 200) {
           ElMessage.success(res.message)
