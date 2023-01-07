@@ -1,5 +1,5 @@
 <template>
-  <div ref="monacoRef" :style="{height,width}" class="mk-monaco-editor" @mouseleave="focusOut()"/>
+  <div ref="monacoRef" :style="{height,width}" class="mk-monaco-editor" @mouseenter="mouseIsLeave = false" @mouseleave="registerWatch"/>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +23,7 @@ let props = withDefaults(defineProps<{
   width: '100%',
   autoFormat: false
 });
-let {options, width, autoFormat} = toRefs(props);
+let {options, width, autoFormat,modelValue} = toRefs(props);
 let emits = defineEmits(['update:modelValue']);
 
 const defaultOptions = {
@@ -48,12 +48,13 @@ onMounted(() => {
   initMonacoEditor()
 })
 
-let optionsWatch: WatchStopHandle | undefined
-
-function focusOut() {
+let optionsWatch: WatchStopHandle | undefined = undefined
+let mouseIsLeave = false
+const registerWatch = () => {
+  mouseIsLeave = true
   if (optionsWatch) return
   optionsWatch = watch(() => options, newV => {
-    monacoEditor.setValue(newV.value.value ? newV.value.value : '')
+    monacoEditor.setValue(!newV.value.value ? '' : newV.value.value)
     if (autoFormat.value) {
       monacoEditor.trigger('', 'editor.action.formatDocument', '')
     }
@@ -63,8 +64,9 @@ function focusOut() {
 
 const initMonacoEditor = () => {
   monacoEditor = monaco.editor.create(monacoRef.value as HTMLElement, Object.assign(options.value, defaultOptions))
-  focusOut()
+  registerWatch()
   monacoEditor.onDidChangeModelContent(() => {
+    if (mouseIsLeave && !modelValue?.value) return
     optionsWatch?.()
     emits('update:modelValue', monacoEditor.getValue())
     optionsWatch = undefined

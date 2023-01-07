@@ -40,7 +40,6 @@ const open = () => visible.value = true
 const setData = (data:Array<Generator.RenderResult>) => {
   renderResult.splice(0, renderResult.length)
   Object.assign(renderResult, data)
-  console.log(renderResult)
 }
 
 defineExpose({
