@@ -16,7 +16,7 @@ const execApi: Api.ApiModel = {
     preview: execBase + "/preview",
 }
 export const Exec = {
-    preview: (params: Api.GeneratorParam, config?: AxiosRequestConfig | AxiosHeaders) => http.post<Generator.RenderResult>(execApi.preview, params,config),
+    preview: (params: Api.GeneratorParam, config?: AxiosRequestConfig | AxiosHeaders) => http.post<Generator.renderResults>(execApi.preview, params,config),
     generatorZip: (params: Api.GeneratorParam, config?: AxiosRequestConfig) => http.post(execApi.getZip, params, Object.assign(config, {
         responseType: "blob" // 下载zip文件需要使用的响应格式,这是区别于普通post请求的地方,重点!!!
     })).then(res => {

@@ -65,6 +65,7 @@ import {Optional} from "@/utils/optional";
 import {ElMessage, FormInstance, FormRules} from "element-plus";
 import MkMonacoEditor from '@/components/mkMonacoEditor'
 import {Template} from "@/api/generator";
+import {clearObj} from "@/utils/objectUtil";
 
 let {templateList} = defineProps<{
   templateList: Generator.Type[]
@@ -102,19 +103,6 @@ const save = () => {
 
 const add = () => {
   clearObj(form)
-}
-
-function clearObj(obj:any) {
-  for (const key in obj) {
-    if (Object.getOwnPropertyDescriptor(obj, key)) {
-      const value = obj[key];
-      if (value !== null && typeof value === 'object') {
-        clearObj(value);
-      } else {
-        obj[key] = null;
-      }
-    }
-  }
 }
 
 defineExpose({

@@ -158,6 +158,8 @@
           </el-option-group>
         </el-select>
       </el-row>
+    </el-main>
+    <el-footer>
       <el-row>
         <el-col :span="12">
           <el-button type="success" style="width: 100%" plain @click="save" class="saveBtn">保 存
@@ -169,14 +171,15 @@
           </el-button>
         </el-col>
       </el-row>
-    </el-main>
-    <template-dialog ref="templateDialog"
-                     @success="initTemplate"
-                     :templateList="arrGroup(templateList,item => {return {key:item.type.code,fill:item.type}})"/>
-    <superclass-dialog ref="superclassDialog"
-                       @success="initSuperEntity"
-                       :superclassList="arrGroup(superclassList,item => {return {key:item.type.code,fill:item.type}})"/>
+    </el-footer>
   </el-container>
+  <preview-dialog ref="previewDialog"/>
+  <template-dialog ref="templateDialog"
+                   @success="initTemplate"
+                   :templateList="arrGroup(templateList,item => {return {key:item.type.code,fill:item.type}})"/>
+  <superclass-dialog ref="superclassDialog"
+                     @success="initSuperEntity"
+                     :superclassList="arrGroup(superclassList,item => {return {key:item.type.code,fill:item.type}})"/>
 </template>
 
 <script setup lang="ts">
@@ -188,6 +191,7 @@ import TemplateDialog from './templateDialog.vue'
 import {Optional} from "@/utils/optional";
 import {AxiosHeaders} from "axios";
 import {ElMessage} from "element-plus";
+import PreviewDialog from './preview.vue'
 
 let props = defineProps<{
   table: Generator.SysGeneratorTable,
@@ -209,6 +213,8 @@ let tableStrategy = reactive<Generator.SysGeneratorTableStrategy>({
 })
 let templateDialog = ref<InstanceType<typeof TemplateDialog> | null>(null)
 let superclassDialog = ref<InstanceType<typeof SuperclassDialog> | null>(null)
+let previewDialog = ref<InstanceType<typeof PreviewDialog> | null>(null)
+
 
 enum MockType {
   FIXED = '固定',
@@ -301,7 +307,10 @@ const delField = (field: Generator.SysGeneratorField) => {
   })
 }
 
-const openDialog = <T, >(dialogRef: InstanceType<typeof TemplateDialog> | InstanceType<typeof SuperclassDialog>, data: T): void => {
+const openDialog = <T, >(dialogRef: InstanceType<typeof TemplateDialog> |
+                             InstanceType<typeof SuperclassDialog> |
+                             InstanceType<typeof PreviewDialog>
+    , data: T): void => {
   dialogRef.open()
   dialogRef.setData(data)
 }
@@ -312,12 +321,13 @@ const save = () => {
 }
 
 const preview = () => {
+  save()
   Exec.preview({
     tables: [table.value],
     id: table.value.dbId as number
   }, new AxiosHeaders({Loading: '.previewBtn'})).then(res => {
     if (res.code === 200) {
-      console.log(res.data)
+      openDialog(previewDialog?.value, res.data.renderResults)
     }
   })
 }

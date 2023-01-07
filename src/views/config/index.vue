@@ -1,25 +1,24 @@
 <template>
   <el-container>
     <el-aside>
-      <tableSide :dbId="dbId" :dbName="dbName" @tableClick="tableClick"></tableSide>
+      <table-side :dbId="dbId" :dbName="dbName" @tableClick="tableClick"></table-side>
     </el-aside>
     <el-container>
-      <fieldSide :table="currentTable"></fieldSide>
+      <field-side :table="currentTable"></field-side>
     </el-container>
-    <el-aside>3</el-aside>
   </el-container>
 </template>
 
 <script setup lang="ts">
-import tableSide from './table/index.vue'
-import fieldSide from './field/index.vue'
+import TableSide from './table/index.vue'
+import FieldSide from './field/index.vue'
 import {useRoute} from "vue-router"
 import {Generator} from "@/models/generator";
 import {reactive} from "vue";
 
 let route = useRoute();
-let dbId = route.query.id;
-let dbName = route.query.dbName
+let dbId = (route.query.id as any) as number;
+let dbName = route.query.dbName as string
 let currentTable = reactive<Generator.SysGeneratorTable>({})
 
 const tableClick = (table: Generator.SysGeneratorTable) => Object.assign(currentTable, table)

@@ -71,13 +71,7 @@ let rules = reactive<FormRules>({
   type: [{required: true, message: '请选择类型'}],
 })
 const classTemplate: Generator.Field = {fieldFill: "UPDATE", name: ""}
-const open = () => visible.value = true
 const formRef = ref<FormInstance>()
-
-const setData = (data: Generator.SysGeneratorSuperclass) => {
-  Optional.ofNullable(data).ifPresent(item => Object.assign(form, item))
-  form.type = (data.type as Generator.Type).code
-}
 
 const submit = () => {
   Superclass.save(form).then(res => {
@@ -93,6 +87,11 @@ const add = () => {
   clearObj(form)
 }
 
+const open = () => visible.value = true
+const setData = (data: Generator.SysGeneratorSuperclass) => {
+  Optional.ofNullable(data).ifPresent(item => Object.assign(form, item))
+  form.type = (data.type as Generator.Type).code
+}
 
 defineExpose({
   open,

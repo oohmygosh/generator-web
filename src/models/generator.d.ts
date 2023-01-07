@@ -206,6 +206,10 @@ declare namespace Generator {
         language?: string
     }
 
+    interface renderResults {
+        renderResults: RenderResult[]
+    }
+
     /**
      * 渲染结果
      */
@@ -213,7 +217,9 @@ declare namespace Generator {
         // 内容
         content: string
         // 类型
-        type: object
+        type: Type
+        // path
+        path: string
     }
 
 }
