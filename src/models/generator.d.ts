@@ -62,6 +62,7 @@ declare namespace Generator {
         // 作者
         author?: string
     }
+
     /**
      * 表生成策略
      *
@@ -153,6 +154,59 @@ declare namespace Generator {
     }
 
     /**
+     * 生成器模板
+     *
+     * @author oohmygosh
+     * @since 2023-01-06
+     */
+    interface SysGeneratorTemplate extends BaseEntity {
+        // 0:entity 1:mapper 2:service 3:serviceImpl 4:controller 5:xml
+        type: Type | number
+        // 0:velocity 1:beetl 2:freemarker
+        templateType: number
+        // 模板
+        template?: any
+        // 模板名称
+        name: string
+        // 应用名
+        app: string
+    }
+
+    /**
+     * 父类
+     *
+     * @author oohmygosh
+     * @since 2023-01-06
+     */
+    interface SysGeneratorSuperclass extends BaseEntity {
+        // 0:entity 1:mapper 2:service 3:serviceImpl 4:controller
+        type: Type | number
+        // 公共字段
+        field?: Field[]
+        // 应用
+        app: string
+        // 类名
+        name: string
+        // 包路径
+        path?: string
+    }
+
+    type Field = {
+        // 字段名
+        name: string
+        // 字段填充
+        fieldFill: string
+        // 包路径
+        packagePath?: string
+    }
+
+    type Type = {
+        desc?: string
+        code: number
+        language?: string
+    }
+
+    /**
      * 渲染结果
      */
     interface RenderResult {
@@ -161,4 +215,5 @@ declare namespace Generator {
         // 类型
         type: object
     }
+
 }

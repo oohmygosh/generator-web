@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import axios, {AxiosRequestConfig} from "axios";
+import axios, {AxiosHeaders, AxiosRequestConfig} from "axios";
 import sysConfig from '@/config'
 import {ElLoading, ElMessageBox, ElNotification} from "element-plus";
 import router from "@/router";
@@ -11,7 +11,7 @@ axios.defaults.timeout = sysConfig.TIMEOUT
 // HTTP request 拦截器
 axios.interceptors.request.use(
     (config: AxiosRequestConfig) => {
-        if (config.headers?.['Loading'] !== false) {
+        if (config.headers?.['Loading']) {
             showLoading(config.headers?.['Loading'])
             delete config.headers?.['Loading']
         }
@@ -85,7 +85,7 @@ const http = {
      * @param params 请求参数
      * @param config 请求配置
      */
-    get: function<T> (url: string, params?: object, config: object = {}) {
+    get: function <T>(url: string, params?: object, config: AxiosRequestConfig | AxiosHeaders = {}) {
         return new Promise<IResponseData<T>>((resolve, reject) => {
             axios({
                 method: 'get',
@@ -106,7 +106,7 @@ const http = {
      * @param data 请求参数
      * @param config 请求配置
      */
-    post: function <T>(url: string, data: object, config: object = {}) {
+    post: function <T>(url: string, data: object, config: AxiosRequestConfig | AxiosHeaders = {}) {
         return getPromise<T>('post', url, data, config)
     },
 
@@ -116,7 +116,7 @@ const http = {
      * @param data 请求参数
      * @param config 请求配置
      */
-    put: function (url: string, data: object, config: object = {}) {
+    put: function (url: string, data: object, config: AxiosRequestConfig | AxiosHeaders = {}) {
         return getPromise('put', url, data, config)
     },
 
@@ -126,7 +126,7 @@ const http = {
      * @param data 请求参数
      * @param config 请求配置
      */
-    patch: function (url: string, data: object, config: object = {}) {
+    patch: function (url: string, data: object, config: AxiosRequestConfig | AxiosHeaders = {}) {
         return getPromise('patch', url, data, config)
     },
 
@@ -168,7 +168,9 @@ const http = {
  * @param data 参数
  * @param config 请求配置
  */
-function getPromise<T>(method: string, url: string, data: object, config: object) {
+function getPromise<T>(method: string, url: string, data: object, config: AxiosRequestConfig | AxiosHeaders) {
+    if (config instanceof AxiosHeaders)
+        config = {headers: {config}}
     return new Promise<IResponseData<T> & Blob>((resolve, reject) => {
         axios({
             method: method,
@@ -185,15 +187,14 @@ function getPromise<T>(method: string, url: string, data: object, config: object
 
 let loadingRequestCount = 0;
 // loading对象
-let loadingInstance: any;
+const loadingInstance: any[] = [];
 const showLoading = (target: any) => {
-    if (target === false) return
     if (loadingRequestCount === 0) {
-        loadingInstance = ElLoading.service({
+        loadingInstance.push(ElLoading.service({
             lock: true,
             text: 'Loading...',
             target: target || 'body'
-        });
+        }))
     }
     loadingRequestCount++
 }
@@ -202,15 +203,14 @@ const showLoading = (target: any) => {
 const hideLoading = () => {
     if (loadingRequestCount <= 0) return;
     loadingRequestCount--;
-    if (loadingRequestCount <= 0) {
-        toHideLoading();
-    }
+    toHideLoading();
 }
 
-// 防抖：将 300ms 间隔内的关闭 loading 便合并为一次. 防止连续请求时, loading闪烁的问题。
 const toHideLoading = _.debounce(() => {
-    loadingInstance.close();
-    loadingInstance = null;
+    if (loadingRequestCount <= 0)
+        loadingInstance.splice(0, loadingInstance.length).forEach(instances => instances.close())
+    else
+        loadingInstance.shift().close()
 }, 300);
 
 export declare type IResponseData<T = any> = {

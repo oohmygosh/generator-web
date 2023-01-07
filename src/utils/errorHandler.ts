@@ -8,6 +8,6 @@ import {ElMessage} from "element-plus";
 export default (error: any, instance: ComponentPublicInstance | null) => {
     console.error(`[Maker error]: ${error}`);
     instance?.$nextTick(() => {
-        ElMessage.error(error)
+        ElMessage.error(error.toString())
     })
 }

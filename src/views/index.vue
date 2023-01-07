@@ -63,7 +63,7 @@ onMounted(() => {
 // 获取数据源
 const getDbs = () => {
   nextTick(() => {
-    Db.page.get().then(res => {
+    Db.page.get(undefined,{headers:{Loading:'body'}}).then(res => {
       if (res.code === 200) {
         data.splice(0, data.length)
         Object.assign(data, res.data.records)

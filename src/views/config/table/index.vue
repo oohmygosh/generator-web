@@ -24,7 +24,7 @@
         </template>
       </el-tree>
     </el-main>
-    <el-button type="success" style="border-radius: 0" @click="createOrEditTable">新建表</el-button>
+    <el-button type="success" style="border-radius: 0" @click="createOrEditTable(undefined)">新建表</el-button>
     <el-footer>
       <el-button @click="checkedAll">{{ isAllChecked() ? "反选" : "全选" }}</el-button>
       <el-button @click="generatorZip" class="generatorBtn" type="primary">
@@ -39,19 +39,20 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable vue/no-setup-props-destructure */
-import {defineProps, defineEmits, onMounted, reactive, ref, nextTick} from 'vue'
+import {defineProps, defineEmits, onMounted, reactive, ref, nextTick, toRefs} from 'vue'
 import {ElMessage, ElTree} from "element-plus";
 import {Generator} from "@/models/generator";
 import {Table, Exec} from "@/api/generator";
 import Node from "element-plus/es/components/tree/src/model/node";
 import tableDialog from './save.vue'
+import {Optional} from "@/utils/optional";
 
 let emits = defineEmits(['tableClick']);
-const {dbId, dbName} = defineProps<{
+const props = defineProps<{
   dbId: number,
   dbName: string,
 }>()
+const {dbId} = toRefs(props)
 let tableTreeRef = ref<InstanceType<typeof ElTree>>()
 let tables = reactive<Array<Generator.SysGeneratorTable> | Node[]>([])
 const isAllChecked = () => {return tableTreeRef.value?.getCheckedNodes().length === tables.length}
@@ -66,12 +67,12 @@ const checkedAll = () => {
 onMounted(async () => {
   await initTables()
   await nextTick(() => {
-    emits('tableClick', tables[0]?.id)
+    emits('tableClick', tables[0])
   })
 })
 
 const initTables = async () => {
-  await Table.get(dbId, {headers: {Loading: '.menu'}}).then(res => {
+  await Table.get(dbId.value, {headers: {Loading: '.menu'}}).then(res => {
     if (res.code === 200) {
       tables.splice(0, tables.length)
       Object.assign(tables, res.data)
@@ -80,7 +81,7 @@ const initTables = async () => {
 }
 
 const generatorZip = () => {
-  Exec.generatorZip({id: dbId, tables: tableTreeRef.value?.getCheckedNodes() as Generator.SysGeneratorTable[]}, {
+  Exec.generatorZip({id: dbId.value, tables: tableTreeRef.value?.getCheckedNodes() as Generator.SysGeneratorTable[]}, {
     headers: {Loading: '.generatorBtn'}
   }).catch(() => {
     ElMessage.error("生成失败！！！")
@@ -88,13 +89,12 @@ const generatorZip = () => {
 }
 
 const tableClick = (table: Generator.SysGeneratorTable) => {
-  emits('tableClick', table.id)
+  emits('tableClick', table)
 }
 
 const createOrEditTable = (table:Generator.SysGeneratorTable | undefined,mode = 'add') => {
   tableDialogRef.value?.open(mode)
-  if (typeof table === 'object')
-    tableDialogRef.value?.setData(table)
+  Optional.ofNullable(table).ifPresent(() => tableDialogRef.value?.setData(table))
 }
 
 const tableDel = (table: Generator.SysGeneratorTable) => {

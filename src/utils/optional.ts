@@ -44,6 +44,13 @@ export class Optional<T> {
             emptyAction()
     }
 
+    ifPresentOrThrow = (action: (value: T) => void, msg:string) => {
+        if (this.isPresent())
+            action(this.value)
+        else
+            throw msg
+    }
+
 
     get = () => {
         if (Optional.isNull(this.value))

@@ -25,7 +25,7 @@ import {Optional} from "@/utils/optional";
 let props = defineProps<{
   dbId: number
 }>();
-toRefs(props);
+let {dbId} = toRefs(props);
 let emits = defineEmits(['success'])
 const titleMap = {
   add: '新增表',
@@ -54,7 +54,7 @@ const submit = (formInstance: FormInstance | undefined,) => {
   if (!formInstance) return
   formInstance.validate(valid => {
     if (valid) {
-      Optional.ofNullable(form.dbId).ifPresentOrElse(id => form.dbId = id,() => {throw "参数缺失！！"})
+      Optional.ofNullable(form.dbId).ifPresentOrElse(id => form.dbId = id,() => {form.dbId = dbId.value})
       Table.save(form, {headers: {Loading: '.submitBtn'}}).then(res => {
         if (res.code === 200) {
           ElMessage.success(res.message)
