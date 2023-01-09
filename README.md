@@ -4,7 +4,7 @@
 
 前端仓库：https://github.com/oohmygosh/generator-web
 
-后端仓库：https://github.com/oohmygosh/generator-admin
+后端仓库：https://github.com/oohmygosh/generator
 
 ## 项目特点
 
@@ -19,6 +19,10 @@
 ![https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090391.png](https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090391.png)
 
 ![https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090580.png](https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090580.png)
+
+![https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8%EF%BC%88%E5%89%8D%E7%AB%AF%EF%BC%89/1673185281.png](https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8%EF%BC%88%E5%89%8D%E7%AB%AF%EF%BC%89/1673185281.png)
+
+![https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8%EF%BC%88%E5%89%8D%E7%AB%AF%EF%BC%89/1673185377.png](https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8%EF%BC%88%E5%89%8D%E7%AB%AF%EF%BC%89/1673185377.png)
 
 ![https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090659.png](https://cdn.jsdelivr.net/gh/oohmygosh/oohmygosh.github.io/img/Generator-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%99%A8/1673090659.png)
 
