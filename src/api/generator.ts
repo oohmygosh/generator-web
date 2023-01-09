@@ -16,7 +16,7 @@ const execApi: Api.ApiModel = {
     preview: execBase + "/preview",
 }
 export const Exec = {
-    preview: (params: Api.GeneratorParam, config?: AxiosRequestConfig | AxiosHeaders) => http.post<Generator.renderResults>(execApi.preview, params,config),
+    preview: (params: Api.GeneratorParam, config?: AxiosRequestConfig | AxiosHeaders) => http.post<Generator.renderResults>(execApi.preview, params, config),
     generatorZip: (params: Api.GeneratorParam, config?: AxiosRequestConfig) => http.post(execApi.getZip, params, Object.assign(config, {
         responseType: "blob" // 下载zip文件需要使用的响应格式,这是区别于普通post请求的地方,重点!!!
     })).then(res => {
@@ -39,6 +39,9 @@ export const Exec = {
  * 数据源Api
  */
 const dbBase = base + '/db'
+const dbApi = {
+    get: dbBase + '/get'
+}
 export const Db = {
     page: {
         url: dbBase + '/page',
@@ -47,6 +50,7 @@ export const Db = {
             return await http.post<Page<Generator.SysGeneratorDb>>(this.url, params, config);
         }
     },
+    get: (id: number) => http.get<Generator.SysGeneratorDb>(dbApi.get, {id}),
     save: (params: Generator.SysGeneratorDb, config?: AxiosRequestConfig) => http.post(dbBase + (params.id ? '/update' : '/create'), params, config),
     delete: (ids: number[]) => http.post(dbBase + '/delete', ids),
 }

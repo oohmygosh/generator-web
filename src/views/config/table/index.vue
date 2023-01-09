@@ -75,7 +75,7 @@ const initTables = async () => {
   await Table.get(dbId.value, {headers: {Loading: '.menu'}}).then(res => {
     if (res.code === 200) {
       tables.splice(0, tables.length)
-      Object.assign(tables, res.data)
+      Object.assign(tables, res.data.sort((a,b) => (a.id as number) - (b.id as number)))
     }
   })
 }

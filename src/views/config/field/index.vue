@@ -2,51 +2,59 @@
   <el-container class="root">
     <el-header><h1>{{ table.name }}</h1></el-header>
     <el-main class="nopadding" style="padding: 20px">
-      <el-button type="success">新增字段</el-button>
+      <el-button type="success" v-if="fieldSaveDialog" @click="fieldSaveDialog.open">新增字段</el-button>
       <el-collapse v-for="field in fields" :key="field.id">
         <el-collapse-item>
           <template v-slot:title>
-            <el-input autosize v-model="field.name" clearable>
+            <div class="el-input el-input-group el-input-group--prepend">
+              <div class="el-input-group__prepend">字段：</div>
+              <span class="el-input__wrapper" style="justify-content: left">{{ field.name }}</span>
+            </div>
+          </template>
+          <!--<template v-slot:title>
+            <el-input autosize v-model="field.name" readonly clearable>
               <template #prepend>字段:</template>
             </el-input>
-          </template>
+          </template>-->
           <el-row type="flex" justify="center" :gutter="20">
             <el-col :span="6">
-              <el-input v-model="field.comment" clearable>
+              <el-input v-model="field.comment" clearable disabled>
                 <template #prepend>注释:</template>
               </el-input>
             </el-col>
             <el-col :span="6">
               <el-input v-model="field.jdbcType"
-                        :value="field.jdbcType"
-                        clearable>
+                        :value="hasLength(field.jdbcType) ? `${field.jdbcType}(${field.length})` : field.jdbcType"
+                        clearable disabled>
                 <template #prepend>类型:</template>
               </el-input>
             </el-col>
             <el-col :span="8">
-              <el-input v-model="field.defaultValue" clearable placeholder="要求和字段类型匹配">
+              <el-input v-model="field.defaultValue" clearable disabled>
                 <template #prepend>默认值:</template>
               </el-input>
             </el-col>
           </el-row>
           <el-row type="flex" justify="center" :gutter="20">
-            <el-col :span="2">
-              <el-checkbox v-model="field.primaryKey">主键</el-checkbox>
+            <el-col :span="1.5">
+              <el-checkbox v-model="field.primaryKey" disabled>主键</el-checkbox>
             </el-col>
-            <el-col :span="2">
+            <el-col :span="1.5">
               <el-checkbox v-model="field.autoIncrement" :disabled="true">自增</el-checkbox>
             </el-col>
-            <el-col :span="2">
-              <el-checkbox :checked="!field.nullable" @change="field.nullable = !field.nullable">非空
+            <el-col :span="1.5">
+              <el-checkbox :checked="!field.nullable" @change="field.nullable = !field.nullable" disabled>非空
               </el-checkbox>
             </el-col>
-            <el-col :span="7" style="align-items: center;display: flex">
-              <span>数据模拟：</span>
-              <el-select style="width: 140px;" v-model="field.mockType" placeholder="选择模拟策略"
-                         @change="field.mockParam = null" clearable>
-                <el-option v-for="[key,comment] in Object.entries(MockType)" :key="key" :label="comment"
-                           :value="key"/>
-              </el-select>
+            <el-col :span="4" style="align-items: center;display: flex">
+              <div class="el-input el-input-group el-input-group--prepend">
+                <div class="el-input-group__prepend">数据模拟：</div>
+                <el-select style="width: 140px;" v-model="field.mockType" placeholder="选择模拟策略"
+                           @change="field.mockParam = null" clearable>
+                  <el-option v-for="[key,comment] in Object.entries(MockType)" :key="key" :label="comment"
+                             :value="key"/>
+                </el-select>
+              </div>
             </el-col>
             <el-col :span="4" v-if="field.mockType">
               <el-input v-if="field.mockType === 'FIXED'" placeholder="请输入固定值"
@@ -86,6 +94,43 @@
           </el-input>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="8">
+          <div class="el-input el-input-group el-input-group--prepend">
+            <div class="el-input-group__prepend">Mock数量：</div>
+            <el-input-number :min="0" :max="50" class="el-input__wrapper"
+                             v-model="tableStrategy.mockNum"></el-input-number>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="el-input el-input-group el-input-group--prepend">
+            <div class="el-input-group__prepend">去字段前缀：</div>
+            <el-select style="width: 100%" v-model="tableStrategy.fieldPrefix"
+                       multiple
+                       filterable
+                       allow-create
+                       default-first-option
+                       collapse-tags
+                       collapse-tags-tooltip
+                       :reserve-keyword="false"
+                       placeholder="多个值按回车隔开"/>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="el-input el-input-group el-input-group--prepend">
+            <div class="el-input-group__prepend">去字段后缀：</div>
+            <el-select style="width: 100%" v-model="tableStrategy.fieldSuffix"
+                       multiple
+                       filterable
+                       allow-create
+                       default-first-option
+                       collapse-tags
+                       collapse-tags-tooltip
+                       :reserve-keyword="false"
+                       placeholder="多个值按回车隔开"/>
+          </div>
+        </el-col>
+      </el-row>
       <el-divider content-position="left">Lombok</el-divider>
       <el-row justify="space-evenly">
         <el-checkbox v-model="tableStrategy.lombok.builder">@Builder</el-checkbox>
@@ -109,6 +154,7 @@
       <el-row justify="start">
         <el-checkbox v-model="tableStrategy.swagger">Swagger</el-checkbox>
         <el-checkbox v-model="tableStrategy.mapper">@Mapper</el-checkbox>
+        <el-checkbox v-model="tableStrategy.validation">参数校验</el-checkbox>
       </el-row>
       <el-divider content-position="left">父类</el-divider>
       <el-row>
@@ -158,6 +204,11 @@
           </el-option-group>
         </el-select>
       </el-row>
+      <el-row>
+        <el-button style="width: 100%" v-if="globalConfigDialog"
+                   @click="openGlobalConfig">全局配置
+        </el-button>
+      </el-row>
     </el-main>
     <el-footer>
       <el-row>
@@ -174,24 +225,28 @@
     </el-footer>
   </el-container>
   <preview-dialog ref="previewDialog"/>
+  <field-save-dialog ref="fieldSaveDialog" :tableId="table.id" @success="initFields"/>
   <template-dialog ref="templateDialog"
                    @success="initTemplate"
                    :templateList="arrGroup(templateList,item => {return {key:item.type.code,fill:item.type}})"/>
   <superclass-dialog ref="superclassDialog"
                      @success="initSuperEntity"
                      :superclassList="arrGroup(superclassList,item => {return {key:item.type.code,fill:item.type}})"/>
+  <global-config-dialog ref="globalConfigDialog" :pane-name="'globalStrategy'"/>
 </template>
 
 <script setup lang="ts">
 import {defineProps, reactive, ref, toRefs, watch} from 'vue'
 import {Generator} from "@/models/generator";
-import {Exec, Field, Superclass, TableStrategy, Template} from "@/api/generator";
+import {Db, Exec, Field, Superclass, TableStrategy, Template} from "@/api/generator";
 import SuperclassDialog from './superclassDialog.vue'
 import TemplateDialog from './templateDialog.vue'
 import {Optional} from "@/utils/optional";
 import {AxiosHeaders} from "axios";
 import {ElMessage} from "element-plus";
 import PreviewDialog from './preview.vue'
+import FieldSaveDialog from './save.vue'
+import GlobalConfigDialog from '@/views/datasource/save.vue'
 
 let props = defineProps<{
   table: Generator.SysGeneratorTable,
@@ -214,6 +269,8 @@ let tableStrategy = reactive<Generator.SysGeneratorTableStrategy>({
 let templateDialog = ref<InstanceType<typeof TemplateDialog> | null>(null)
 let superclassDialog = ref<InstanceType<typeof SuperclassDialog> | null>(null)
 let previewDialog = ref<InstanceType<typeof PreviewDialog> | null>(null)
+let fieldSaveDialog = ref<InstanceType<typeof FieldSaveDialog> | null>(null)
+let globalConfigDialog = ref<InstanceType<typeof GlobalConfigDialog> | null>(null)
 
 
 enum MockType {
@@ -254,7 +311,7 @@ const initFields = () => {
     Field.fetchTableField(id, {headers: {Loading: '.root'}}).then(res => {
       if (res.code === 200) {
         fields.splice(0, fields.length)
-        Object.assign(fields, res.data)
+        Object.assign(fields, res.data.sort((a, b) => (a.id as number) - (b.id as number)))
       }
     })
   }, '参数缺失！')
@@ -307,15 +364,13 @@ const delField = (field: Generator.SysGeneratorField) => {
   })
 }
 
-const openDialog = <T, >(dialogRef: InstanceType<typeof TemplateDialog> |
-                             InstanceType<typeof SuperclassDialog> |
-                             InstanceType<typeof PreviewDialog>
-    , data: T): void => {
-  dialogRef.open()
-  dialogRef.setData(data)
+const openDialog = <T, V extends { open: (model?: string) => void, setData: (data: any) => void }>(dialogRef: V | any, data: T, model?: string): void => {
+  dialogRef?.open(model)
+  dialogRef?.setData(data)
 }
 
 const save = () => {
+  // console.log(tableStrategy)
   TableStrategy.save(tableStrategy, new AxiosHeaders({Loading: '.saveBtn'}))
       .then(res => res.code === 200 ? ElMessage.success(res.message) : ElMessage.error(res.message))
 }
@@ -330,6 +385,23 @@ const preview = () => {
       openDialog(previewDialog?.value, res.data.renderResults)
     }
   })
+}
+
+const openGlobalConfig = async () => {
+  let db = await Db.get(table.value.dbId as number);
+  globalConfigDialog?.value.open('edit','globalStrategy')
+  globalConfigDialog?.value.setData(db.data)
+}
+
+const hasLength = (type: string) => {
+  switch (type) {
+    case "VARCHAR":
+    case "CHAR":
+    case "BINARY":
+    case "VARBINARY":
+      return true
+  }
+  return false
 }
 
 </script>

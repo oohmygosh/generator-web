@@ -12,19 +12,19 @@ declare namespace Generator {
      */
     interface SysGeneratorDb extends BaseEntity {
         //数据库连接URL
-        url: string
+        url?: string
         //密码
-        password: string
+        password?: string
         //数据库类型
         dbType?: string
         //数据库描述
-        comment: string
+        comment?: string
         //0：未删除 1：删除
         deleted?: number
         //数据库名称
-        dbName: string
+        dbName?: string
         //用户名
-        username: string
+        username?: string
     }
 
     /**
@@ -61,6 +61,10 @@ declare namespace Generator {
         packagePath?: string
         // 作者
         author?: string
+        // 表前缀
+        tablePrefix?: string[]
+        // 表后缀
+        tableSuffix?: string[]
     }
 
     /**
@@ -80,6 +84,10 @@ declare namespace Generator {
         swagger?: boolean
         // @Mapper注解
         mapper?: boolean
+        // 参数校验
+        validation?: boolean
+        // mock 数量
+        mockNum?: number
         // lombok配置
         lombok: LombokConfig
         // 超类Id
@@ -87,10 +95,6 @@ declare namespace Generator {
         // 模板Id
         templates: number[]
         // 命名策略
-        naming?: string
-        // 表前缀
-        tablePrefix?: string[]
-        // 表后缀
         tableSuffix?: string[]
         // 字段前缀
         fieldPrefix?: string[]
@@ -130,27 +134,27 @@ declare namespace Generator {
         // 字段名
         name: string
         // 模拟数据类型
-        mockType: string
+        mockType?: string
         // 模拟数据参数
-        mockParam: string
+        mockParam?: string
         // 数据类型
-        jdbcType: object
+        jdbcType: string
         // 数据范围
-        scale: number
+        scale?: number
         // 默认值
-        defaultValue: string
+        defaultValue?: string
         // 注释
         comment: string
         // 可为空
-        nullable: boolean
+        nullable?: boolean
         // 属性名
-        propertyName: string
+        propertyName?: string
         // 主键
-        primaryKey: boolean
+        primaryKey?: boolean
         // 自增
-        autoIncrement: boolean
+        autoIncrement?: boolean
         // 长度
-        length: number
+        length?: number
     }
 
     /**

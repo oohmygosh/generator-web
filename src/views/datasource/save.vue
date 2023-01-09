@@ -10,7 +10,7 @@
   <el-dialog :title="titleMap[mode]" v-model="visible" :width="400" destroy-on-close>
     <el-tabs tab-position="top" v-model="paneName">
       <el-tab-pane label="编辑" name="db">
-        <el-form :model="db" :rules="formRule" label-width="80" label-position="left" ref="formRef">
+        <el-form :model="db" :rules="formRule" label-width="80px" label-position="left" ref="formRef">
           <el-form-item label="名称" prop="dbName">
             <el-input v-model="db.dbName" clearable/>
           </el-form-item>
@@ -29,25 +29,49 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="全局配置" v-if="mode === 'edit'" name="globalStrategy">
-        <el-form :model="globalStrategyForm" ref="globalStrategyRef" label-width="80" label-position="left">
-          <el-form-item label="Package">
+        <el-form :model="globalStrategyForm" ref="globalStrategyRef" label-width="100px" label-position="left">
+          <el-form-item label="Package：">
             <el-input v-model="globalStrategyForm.packagePath" placeholder="包路径" clearable/>
           </el-form-item>
-          <el-form-item label="Author">
+          <el-form-item label="Author：">
             <el-input v-model="globalStrategyForm.author" placeholder="作者" clearable/>
+          </el-form-item>
+          <el-form-item label="移除表前缀：">
+            <el-select style="width: 100%" v-model="globalStrategyForm.tablePrefix"
+                       multiple
+                       filterable
+                       allow-create
+                       default-first-option
+                       collapse-tags
+                       collapse-tags-tooltip
+                       :reserve-keyword="false"
+                       placeholder="多个值按回车隔开"/>
+          </el-form-item>
+          <el-form-item label="移除表后缀：">
+            <el-select style="width: 100%" v-model="globalStrategyForm.tableSuffix"
+                       multiple
+                       filterable
+                       allow-create
+                       default-first-option
+                       collapse-tags
+                       collapse-tags-tooltip
+                       :reserve-keyword="false"
+                       placeholder="多个值按回车隔开"/>
           </el-form-item>
         </el-form>
       </el-tab-pane>
     </el-tabs>
     <template #footer>
       <el-button @click="visible=false">取 消</el-button>
-      <el-button type="primary" @click="paneName === 'db' ? submitDb(formRef) : submitGlobalStrategy(globalStrategyRef)" :loading="submitLoading">保 存</el-button>
+      <el-button type="primary" @click="paneName === 'db' ? submitDb(formRef) : submitGlobalStrategy(globalStrategyRef)"
+                 :loading="submitLoading">保 存
+      </el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineExpose, reactive, ref} from 'vue';
+import {defineEmits, defineExpose, defineProps, withDefaults, reactive, ref, toRefs} from 'vue';
 import {Generator} from "@/models/generator";
 import {ElMessage, FormInstance, FormRules} from "element-plus";
 import {Db, GlobalStrategy} from "@/api/generator";
@@ -59,7 +83,12 @@ const titleMap = {
   add: '新增数据源',
   edit: '编辑数据源'
 }
-let paneName = ref('db')
+let prop = withDefaults(defineProps<{
+  paneName: string
+}>(), {
+  paneName: 'db'
+})
+let {paneName} = toRefs(prop);
 let mode = ref<string>('add')
 let formRef = ref<FormInstance>()
 let globalStrategyRef = ref<FormInstance>()
@@ -87,6 +116,7 @@ const setData = (data: Generator.SysGeneratorDb) => {
     GlobalStrategy.get(db.id as number, {headers: {Loading: false}}).then(res => {
       if (res.code === 200)
         Object.assign(globalStrategyForm, res.data)
+      console.log(res.data)
     })
 }
 
